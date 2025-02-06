@@ -1,4 +1,5 @@
 manimations/__pycache__
 test.py 
 media/
-
+.env
+../.DS_Store
