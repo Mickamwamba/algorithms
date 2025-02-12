@@ -6,16 +6,17 @@ from manim_voiceover.services.openai import OpenAIService
 class InsertionSortTTS(VoiceoverScene):
     def construct(self):
         # Initialize text-to-speech service
-        # self.set_speech_service(GTTSService(lang="en"))
-        self.set_speech_service(
-            OpenAIService(
-                voice="echo",
-                model="tts-1-hd",
-            )
-        )
+        self.set_speech_service(GTTSService(lang="en"))
+        # self.set_speech_service(
+        #     OpenAIService(
+        #         voice="echo",
+        #         model="tts-1-hd",
+        #     )
+        # )
 
         # Define the array to be sorted
-        arr = [5, 3, 8, 1, 4]
+        # arr = [5, 3, 8, 1, 4]
+        arr = [9, 8, 3, 7, 5, 6, 4, 1]
         n = len(arr)
 
         # Create square representations for each number in the array
