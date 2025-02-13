@@ -6,20 +6,21 @@ from manim_voiceover.services.openai import OpenAIService
 class InsertionSortTTS(VoiceoverScene):
     def construct(self):
         # Initialize text-to-speech service
-        self.set_speech_service(GTTSService(lang="en"))
-        # self.set_speech_service(
-        #     OpenAIService(
-        #         voice="echo",
-        #         model="tts-1-hd",
-        #     )
-        # )
+        # self.set_speech_service(GTTSService(lang="en"))
+        self.set_speech_service(
+            OpenAIService(
+                voice="echo",
+                model="tts-1-hd",
+            )
+        )
 
         # Define the array to be sorted
         # arr = [5, 3, 8, 1, 4]
-        arr = [9, 8, 3, 7, 5, 6, 4, 1]
+        arr = [9, 8, 3, 7, 4, 1]
         n = len(arr)
 
         # Create square representations for each number in the array
+        
         squares = [Square(side_length=1).shift(RIGHT * i) for i in range(n)]
         labels = [Text(str(num), font_size=36).move_to(square) for num, square in zip(arr, squares)]
         squares_vg = VGroup(*squares)
@@ -116,7 +117,7 @@ class InsertionSortTTS(VoiceoverScene):
                 with self.voiceover(text=f"Is {arr[j]} greater than {key}?"):
                     self.play(squares[j].animate.set_color(RED))
                 
-                decision_text = Text("Yes, shift to the right!", font_size=36).next_to(squares[0], DOWN).shift(DOWN * 0.2)
+                decision_text = Text("Yes, shift to the right!", font_size=36).next_to(squares[n//2], DOWN).shift(DOWN * 0.2)
                 self.play(Write(decision_text))
                 self.wait(1)
                 
@@ -186,3 +187,4 @@ class InsertionSortTTS(VoiceoverScene):
         with self.voiceover(text="Thank you for watching!."):
             pass
         self.wait(1)
+
