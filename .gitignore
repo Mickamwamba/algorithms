@@ -3,3 +3,4 @@ test.py
 media/
 .env
 ../.DS_Store
+.DS_Store
