@@ -15,8 +15,7 @@ class InsertionSortTTS(VoiceoverScene):
         )
 
         # Define the array to be sorted
-        # arr = [5, 3, 8, 1, 4]
-        arr = [9, 8, 3, 7, 4, 1]
+        arr = [5, 3, 8, 1, 4]
         n = len(arr)
 
         # Create square representations for each number in the array
@@ -27,15 +26,16 @@ class InsertionSortTTS(VoiceoverScene):
         labels_vg = VGroup(*labels)
 
         # Create Python code block to display on the right side of the screen
-        code_text = '''def insertion_sort(arr):
-    for i in range(1, len(arr)):
-        key = arr[i]
-        j = i - 1
-        while j >= 0 and arr[j] > key:
-            arr[j + 1] = arr[j]
-            j -= 1
-        arr[j + 1] = key
-    return arr
+        code_text = '''
+        def insertion_sort(arr):
+            for i in range(1, len(arr)):
+                key = arr[i]
+                j = i - 1
+                while j >= 0 and arr[j] > key:
+                    arr[j + 1] = arr[j]
+                    j -= 1
+                arr[j + 1] = key
+            return arr
 '''
         # Create the code block using 'Code' class
         code = Code(
@@ -43,7 +43,7 @@ class InsertionSortTTS(VoiceoverScene):
             language="Python",
             background="window",
             background_config={"stroke_color": "maroon"},
-        ).to_edge(DOWN)
+        ).to_edge(DOWN).move_to(ORIGIN)
 
         # Display the title
         title = Text("Insertion Sort: Step-by-Step", font_size=48).to_edge(UP)
@@ -117,7 +117,7 @@ class InsertionSortTTS(VoiceoverScene):
                 with self.voiceover(text=f"Is {arr[j]} greater than {key}?"):
                     self.play(squares[j].animate.set_color(RED))
                 
-                decision_text = Text("Yes, shift to the right!", font_size=36).next_to(squares[n//2], DOWN).shift(DOWN * 0.2)
+                decision_text = Text("Yes, shift to the right!", font_size=36).next_to(squares[n//2-1], DOWN).shift(DOWN * 0.3)
                 self.play(Write(decision_text))
                 self.wait(1)
                 
@@ -180,11 +180,13 @@ class InsertionSortTTS(VoiceoverScene):
         self.wait(3)
 
         # Display code block with Python implementation at the end
-        with self.voiceover(text="Here is the Python implementation of Insertion Sort. You may check the source code in the link below this video."):
-            self.play(Create(code))  # Show the code at the end
+        with self.voiceover(text="Here’s the Python implementation of the Insertion Sort. You can find the link to the full source code in the video description below.") as tracker:
+            # self.remove(squares,labels)
+            self.play(Write(code))
             self.wait(3)
 
-        with self.voiceover(text="Thank you for watching!."):
+        with self.voiceover(text="Thank you for watching!"):
             pass
-        self.wait(1)
+
+        self.wait(2)
 
