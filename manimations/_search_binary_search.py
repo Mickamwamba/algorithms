@@ -49,7 +49,7 @@ class BinarySearchTTS(VoiceoverScene):
         
         
         with self.voiceover(f"Now that our array is sorted, we can begin our search for the target number {target}.") as _:
-            self.wait(1)
+            self.wait(2)
 
         first, last = 0, len(sorted_elements) - 1
         found = False
@@ -59,14 +59,14 @@ class BinarySearchTTS(VoiceoverScene):
         while first <= last and not found:
             midpoint_index = (len(search_range) - 1) // 2
             mid_value = search_range[midpoint_index]
-
+            self.wait(2)
             with self.voiceover(f"Now, we check the middle element {mid_value} and compare that to our target search value") as _:
                 self.play(current_squares[midpoint_index].animate.set_color(YELLOW), run_time=0.5)
                 self.wait(1)
 
             comparison_text = Text(f"Is {mid_value} == {target}?", font_size=36).to_edge(LEFT)
             self.play(Write(comparison_text))
-            self.wait(1)
+            self.wait(2)
 
             if mid_value == target:
                 with self.voiceover("Great! We found the target.") as _:
@@ -93,7 +93,7 @@ class BinarySearchTTS(VoiceoverScene):
             with self.voiceover("The target was not found in the array.") as _:
                 self.wait(1)
 
-                
+        
         # Display Binary Search Algorithm Code
         code_text = '''
         def binary_search(arr, target):
@@ -115,11 +115,23 @@ class BinarySearchTTS(VoiceoverScene):
             background="window",
             background_config={"stroke_color": "maroon"},
         ).to_edge(DOWN).move_to(ORIGIN).shift(DOWN * 0.2)
+        # Display the algorithm
+        self.wait(2)
+        self.clear()
 
         with self.voiceover("Here’s the Python implementation of binary search. You can find the link to the full source code in the video description below.") as _:
             self.play(Write(code))
             self.wait(2)
 
+        with self.voiceover("The algorithm has a time complexity of O(log n), making it much faster than linear search for large datasets.") as _:
+            # self.play(Write(code))
+            pass
+        self.wait(2)
+            
+        with self.voiceover("The key to remember here is that, binary search works by repeatedly dividing the search space in half, which is why it requires a sorted array. This divide-and-conquer approach is what makes it so efficient.") as _:
+            # self.wait(2)
+            pass
+        self.wait(2)
         with self.voiceover("Thank you for watching!"):
             pass
 
