@@ -1,19 +1,7 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
-<svg fill="#000000" height="800px" width="800px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
-	 viewBox="0 0 470 470" xml:space="preserve">
-<g>
-	<g>
-		<g>
-			<path d="M432.5,12.5h-395C16.822,12.5,0,29.323,0,50v300c0,20.677,16.822,37.5,37.5,37.5h145v55H130c-4.142,0-7.5,3.358-7.5,7.5
-				c0,4.142,3.358,7.5,7.5,7.5h210c4.142,0,7.5-3.358,7.5-7.5c0-4.142-3.358-7.5-7.5-7.5h-52.5v-55h145
-				c20.678,0,37.5-16.823,37.5-37.5V50C470,29.323,453.178,12.5,432.5,12.5z M272.5,442.5h-75v-55h75V442.5z M455,350
-				c0,12.406-10.093,22.5-22.5,22.5h-395C25.093,372.5,15,362.406,15,350v-22.5h440V350z M455,312.5H15V50
-				c0-12.406,10.093-22.5,22.5-22.5h395c12.407,0,22.5,10.094,22.5,22.5V312.5z"/>
-			<path d="M432.5,42.5h-395c-4.142,0-7.5,3.358-7.5,7.5v240c0,4.142,3.358,7.5,7.5,7.5h325c4.142,0,7.5-3.358,7.5-7.5
-				c0-4.142-3.358-7.5-7.5-7.5H45v-225h380v225h-32.5c-4.142,0-7.5,3.358-7.5,7.5c0,4.142,3.358,7.5,7.5,7.5h40
-				c4.142,0,7.5-3.358,7.5-7.5V50C440,45.858,436.642,42.5,432.5,42.5z"/>
-		</g>
-	</g>
-</g>
-</svg>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Transformed by: SVG Repo Mixer Tools -->
+<svg fill="#ffffff" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 240 240" xml:space="preserve" width="800px" height="800px" stroke="#ffffff">
+<g id="SVGRepo_bgCarrier" stroke-width="0"/>
+<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+<g id="SVGRepo_iconCarrier"> <g> <g> <g> <path d="M8,168h60v12H52v8h40v-8H76v-12h64c2.211,0,4-1.789,4-4V80c0-2.211-1.789-4-4-4H8c-2.211,0-4,1.789-4,4v84 C4,166.211,5.789,168,8,168z M12,84h124v76H76h-8H12V84z"/> <rect x="168" y="60" width="40" height="8"/> <path d="M196,108c-6.617,0-12,5.383-12,12s5.383,12,12,12s12-5.383,12-12S202.617,108,196,108z M196,124c-2.207,0-4-1.793-4-4 c0-2.207,1.793-4,4-4c2.207,0,4,1.793,4,4C200,122.207,198.207,124,196,124z"/> <path d="M49.172,93.172l-24,24c-1.562,1.562-1.562,4.094,0,5.656C25.953,123.609,26.976,124,28,124s2.047-0.391,2.828-1.172 l24-24c1.562-1.562,1.562-4.094,0-5.656C53.266,91.609,50.734,91.609,49.172,93.172z"/> <path d="M224,192V44c0-2.211-1.789-4-4-4h-64c-2.211,0-4,1.789-4,4v148H0v8h156h64h20v-8H224z M216,192h-56V48h56V192z"/> </g> </g> </g> </g>
+</svg>

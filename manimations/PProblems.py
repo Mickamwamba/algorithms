@@ -9,7 +9,6 @@ class EnhancedPProblems(VoiceoverScene):
     def construct(self):
         # Using OpenAI's high-definition voice for better clarity
         self.set_speech_service(OpenAIService(voice="echo", model="tts-1-hd"))
-
         # Title Scene
         title = Text("Taming the Complexity: Understanding P Problems").scale(0.8).to_edge(UP)
         subtitle = Text("Efficient solutions to everyday computational problems", color=BLUE).scale(0.5).next_to(title, DOWN)
@@ -81,10 +80,10 @@ class EnhancedPProblems(VoiceoverScene):
             
             # Hide sorting and show map
             self.play(
-                FadeOut(VGroup(file_icons, file_labels), shift=LEFT),
+                # FadeOut(VGroup(file_icons, file_labels), shift=LEFT),
                 FadeIn(map_group, shift=RIGHT)
             )
-        self.wait(1)    
+        # self.wait(1)    
         with self.voiceover("Or, lets say, how does it find the fastest route to your friend's house?"):
         
             # Animate the route finding with pulsing effect for clarity
@@ -104,11 +103,44 @@ class EnhancedPProblems(VoiceoverScene):
             )
             
             self.wait(0.5)
-            self.play(FadeOut(computer), FadeOut(map_group), FadeOut(alt_route1), FadeOut(alt_route2))
-
-        with self.voiceover("It's all thanks to a special group of problems called 'P problems'. Today, we'll explore what makes these problems so manageable."):
-            pass
-        
+            self.play(FadeOut(computer), FadeOut(map_group), FadeOut(alt_route1), FadeOut(alt_route2), FadeOut(VGroup(file_icons, file_labels))) 
+                
+        with self.voiceover("It's all thanks to a special group of problems called 'Polynomial Problems' or 'P problems' in short."):
+            # Create a copy of the title to highlight the "P Problems" part
+            # First, find where "P Problems" is in the title
+            original_title_text = "Taming the Complexity: Understanding P Problems"
+            p_problems_index = original_title_text.find("P Problems")
+            
+            # Create a new text object for highlighting just the "P Problems" part
+            highlighted_text = Text("P Problems", color=WHITE).scale(0.8)
+            
+            # Position it correctly over the same text in the title
+            # Get the position of "P Problems" in the original title
+            p_problems_start = p_problems_index / len(original_title_text)  # Fraction of the way through
+            p_problems_width = len("P Problems") / len(original_title_text)  # Width as a fraction
+            
+            # Calculate the position - this is an approximation and may need adjustment
+            title_width = title.width
+            title_left = title.get_left()[0]
+            highlight_pos_x = title_left + (title_width * p_problems_start) + (title_width * p_problems_width / 2)
+            
+            # Move the highlight to position
+            highlighted_text.move_to([highlight_pos_x, title.get_center()[1], 0])
+            self.wait(1)
+            # Animate highlighting
+            self.play(
+                Flash(highlighted_text, color=YELLOW, line_length=0.2, flash_radius=0.5, run_time=3.0),
+                # FadeIn(highlighted_text)
+            )
+            
+            # Keep it highlighted while continuing the narration
+            self.wait(1)
+            
+            # Optional: fade it back to normal at the end of the voiceover
+            # self.play(FadeOut(highlighted_text))
+        self.wait(1)
+        with self.voiceover("Today, we'll explore what makes these problems so manageable."):
+            pass;
         self.wait(2)
         
         # Party Analogy with properly separated and timed easy and hard tasks
@@ -221,7 +253,7 @@ class EnhancedPProblems(VoiceoverScene):
             
             # Add a computer trying to solve the seating problem
             computer_icon = SVGMobject("desktop-computer").scale(0.4).next_to(seating_problem, DOWN, buff=0.5)  # Changed to below to avoid overlap
-            thinking_bubble = SVGMobject("thought-bubble").scale(0.5).next_to(computer_icon, UP, buff=0.1)
+            thinking_bubble = SVGMobject("thought-bubble").scale(0.5).next_to(computer_icon, UP, buff=0.1).shift(RIGHT*1.5)
             question_mark = Text("?", color=RED).scale(0.8).move_to(thinking_bubble)
             computer_group = VGroup(computer_icon, thinking_bubble, question_mark)
             
@@ -263,6 +295,7 @@ class EnhancedPProblems(VoiceoverScene):
         )
         
         # Polynomial Time Explanation with improved visuals and positioning
+        
         with self.voiceover("Computer scientists call this 'polynomial time'. Think of it like this: If you double the size of the problem (say, twice as many guests), the time it takes to solve it only increases a little bit – not exponentially, like that seating chart nightmare!"):
             # Temporarily hide the main title to avoid overlap
             self.play(FadeOut(title), FadeOut(subtitle))
@@ -284,8 +317,9 @@ class EnhancedPProblems(VoiceoverScene):
             x_label = Text("Problem Size", font_size=24).next_to(axes.x_axis, DOWN, buff=0.5)
             y_label = Text("Time to Solve", font_size=24).rotate(PI/2).next_to(axes.y_axis, LEFT, buff=0.5)
             
-            # Create growable graphs to visualize concept better
-            t = ValueTracker(0.1)  # Start with small value
+            # Create value trackers for smooth transitions
+            t_growth = ValueTracker(0.1)  # For growing the graphs gradually
+            t_points = ValueTracker(0.1)  # For showing points and timing
             
             def poly_func(x):
                 return x**2/5
@@ -293,25 +327,34 @@ class EnhancedPProblems(VoiceoverScene):
             def exp_func(x):
                 return 2**x/4
             
+            # Create graphs that will grow smoothly
             poly = always_redraw(lambda: axes.plot(
-                lambda x: poly_func(x) if x <= t.get_value() else poly_func(t.get_value()), 
+                lambda x: poly_func(x) if x <= t_growth.get_value() else poly_func(t_growth.get_value()), 
                 color=GREEN, 
                 x_range=[0, 5]
             ))
             
             exp = always_redraw(lambda: axes.plot(
-                lambda x: exp_func(x) if x <= t.get_value() else exp_func(t.get_value()),
+                lambda x: exp_func(x) if x <= t_growth.get_value() else exp_func(t_growth.get_value()),
                 color=RED,
                 x_range=[0, 5]
             ))
             
+            # Emphasize the cliff metaphor with little climber icons
+            poly_climber = SVGMobject("person-hiking").scale(0.2).move_to(axes.c2p(4.5, poly_func(4.5)))
+            exp_climber = SVGMobject("person-falling").scale(0.2).move_to(axes.c2p(4.5, exp_func(4.5)))
+            
+            # Add small labels for climbers if needed
+            poly_climber_label = Text("Easy!", font_size=12, color=GREEN).next_to(poly_climber, UP, buff=0.1)
+            exp_climber_label = Text("Impossible!", font_size=12, color=RED).next_to(exp_climber, UP, buff=0.1)
+
             # Add better labels with examples - positioned to avoid overlap
-            poly_label = Text("Polynomial (n²): Gentle growth", color=GREEN).scale(0.4)
-            exp_label = Text("Exponential (2ⁿ): Explosive growth!", color=RED).scale(0.4)
+            poly_label = Text("Polynomial (n²): Gentle growth", font_size=33, color=GREEN).scale(0.4)
+            exp_label = Text("Exponential (2ⁿ): Explosive growth!", font_size=33, color=RED).scale(0.4)
             
             # Position labels to avoid overlap
-            poly_label.next_to(poly, UP, buff=0.2).shift(LEFT*0.5)
-            exp_label.next_to(exp, RIGHT, buff=0.2).shift(UP*0.5)
+            poly_label.next_to(poly_climber, RIGHT, buff=0.2)
+            exp_label.next_to(exp_climber, RIGHT, buff=0.2)
             
             # Double problem size indicators
             problem_size_1 = Dot(axes.c2p(1, 0), color=BLUE)
@@ -342,8 +385,8 @@ class EnhancedPProblems(VoiceoverScene):
                 run_time=1.5
             )
             
-            # Show polynomial growth
-            self.play(Create(poly), Write(poly_label), run_time=1)
+            # Add the graphs to the scene but they're initially almost empty (t_growth is small)
+            self.add(poly, exp)
             
             # Show problem size doubling
             self.play(
@@ -386,17 +429,14 @@ class EnhancedPProblems(VoiceoverScene):
             )
             
             # Now introduce exponential growth
-            self.play(Create(exp), run_time=1)
-            self.wait(0.3)
-            self.play(Write(exp_label), run_time=0.8)
             
             # Add exponential time points
             exp_time_1 = Dot(axes.c2p(1, exp_func(1)), color=RED)
             exp_time_2 = Dot(axes.c2p(2, exp_func(2)), color=RED)
             
             # Position labels to avoid overlap
-            exp_time_1_label = Text("Exponential time\nfor size n", font_size=16, color=RED).next_to(exp_time_1, LEFT, buff=0.2)
-            exp_time_2_label = Text("Exponential time\nfor size 2n", font_size=16, color=RED).next_to(exp_time_2, RIGHT, buff=0.2)
+            exp_time_1_label = Text("Exponential time for size n", font_size=16, color=RED).next_to(exp_time_1, LEFT, buff=0.2)
+            exp_time_2_label = Text("Exponential time for size 2n", font_size=16, color=RED).next_to(exp_time_2, RIGHT, buff=0.2)
             
             exp_line = DashedLine(
                 exp_time_1.get_center(),
@@ -417,22 +457,25 @@ class EnhancedPProblems(VoiceoverScene):
                 run_time=0.8
             )
             
-            # Animate growing the functions to emphasize difference
-            self.play(t.animate.set_value(5), run_time=2)
+            # SMOOTH TRANSITION: Animate both graphs growing simultaneously
+            # First to show the comparison of growth rates from 0 to 2
+            self.play(t_growth.animate.set_value(2), run_time=1.5)
             
-            # Emphasize the cliff metaphor with little climber icons
-            poly_climber = SVGMobject("person-hiking").scale(0.2).move_to(axes.c2p(4.5, poly_func(4.5)))
-            exp_climber = SVGMobject("person-falling").scale(0.2).move_to(axes.c2p(4.5, exp_func(4.5)))
+            # Add labels after initial growth
+            self.play(Write(poly_label), Write(exp_label), run_time=0.8)
             
-            self.play(FadeIn(poly_climber), run_time=0.5)
-            self.play(FadeIn(exp_climber), run_time=0.5)
+            # Now continue the growth to the full range to emphasize the difference
+            self.play(t_growth.animate.set_value(5), run_time=2)
             
             # Keep the graph on screen for 2 seconds as requested
             self.wait(2)
-            
+        
         self.wait(1)
         with self.voiceover("Polynomial time is like a gentle slope, while exponential time is like a sheer cliff."):
-            pass; 
+               # Add the climbers
+            self.play(FadeIn(poly_climber), FadeIn(poly_climber_label), run_time=0.5)
+            self.play(FadeIn(exp_climber), FadeIn(exp_climber_label), run_time=0.5)
+
           # Clean transition
         self.play(
             FadeOut(VGroup(
@@ -442,37 +485,25 @@ class EnhancedPProblems(VoiceoverScene):
                 poly_time_1, poly_time_1_label, poly_time_2, poly_time_2_label,
                 exp_time_1, exp_time_1_label, exp_time_2, exp_time_2_label,
                 poly_line, exp_line, x_label, y_label,
-                poly_climber, exp_climber
+                poly_climber, exp_climber,poly_climber_label,exp_climber_label
             )),
             # FadeIn(title), FadeIn(subtitle)  # Restore the main title
         )
 
         self.wait(1)
 
-        # Sorting Example with Library Books - improved animation with better spacing
-        with self.voiceover("Let's say you have a bunch of unsorted song titles on your playlist. Your computer can quickly alphabetize them using a 'sorting algorithm'. One such algorithm, called 'Merge Sort', works in polynomial time. Even if your playlist has thousands of songs, the computer can sort it relatively quickly."):
+        with self.voiceover("Let's say you have a bunch of unsorted song titles on your playlist. Your computer can quickly alphabetize them using a 'sorting algorithm'. One such algorithm, called 'Merge Sort', works in polynomial time."):
             # Hide main title to avoid overlap
             
             # Create playlist visualization with proper positioning
             playlist_title = Text("My Playlist", color=BLUE).scale(0.7).to_edge(UP)
             
-            # Song rectangles with better spacing and labels
-            # songs = VGroup(*[
-            #     Rectangle(height=0.6, width=3, fill_opacity=0.8, fill_color=color)
-            #     for color in [RED_D, BLUE_D, GREEN_D, YELLOW_D, PURPLE_D]
-            # ]).arrange(DOWN, buff=0.2).scale(0.8)
-
             songs = VGroup(*[
                 Rectangle(height=0.6, width=3.5, fill_opacity=0.8, fill_color=color)  # Increased width for longer text
                 for color in [RED_D, BLUE_D, GREEN_D, YELLOW_D, PURPLE_D]
             ]).arrange(DOWN, buff=0.2).scale(0.8)
             
             songs.next_to(playlist_title, DOWN, buff=0.5)
-
-            # song_titles = VGroup(*[
-            #     Text(title, font_size=20, color=WHITE).move_to(song)
-            #     for song, title in zip(songs, ["Echoes of Tomorrow", "Beyond the Horizon", "Dream Walker", "Astral Journey", "Cosmic Waves"])
-            # ])
 
             # Create text labels and ensure they're properly centered in each rectangle
             song_titles = []
@@ -491,112 +522,113 @@ class EnhancedPProblems(VoiceoverScene):
             # Add sorting visualization
             computer_icon = SVGMobject("desktop-computer").scale(0.6).to_edge(LEFT, buff=1.5)
             
-            # Merge sort visualization - properly positioned
-            # Level 1: Split into individual elements
-            level1 = VGroup(*[
-                Rectangle(height=0.4, width=0.6, fill_opacity=0.8, fill_color=color)
-                for color in [RED_D, BLUE_D, GREEN_D, YELLOW_D, PURPLE_D]
-            ]).arrange(RIGHT, buff=0.5).scale(0.7)
+            # FIXED MERGE SORT VISUALIZATION WITH LETTERS INSIDE BOXES
+            # Use original unsorted letters
+            unsorted_letters = ["E", "B", "D", "A", "C"]
             
-            level1_labels = VGroup(*[
-                Text(title[0], font_size=16, color=WHITE).move_to(rect)
-                for rect, title in zip(level1, ["E", "B", "D", "A", "C"])
-            ])
+            # Helper function to create a box with a letter inside
+            def create_letter_box(letter, color=BLUE_D):
+                box = Rectangle(height=0.4, width=0.8, fill_opacity=0.8, fill_color=color)
+                text = Text(letter, font_size=16, color=WHITE)
+                text.move_to(box.get_center())
+                return VGroup(box, text)
             
-            # Level 2: First merge step (pairs)
-            level2_1 = VGroup(*[
-                Rectangle(height=0.4, width=0.6, fill_opacity=0.8, fill_color=color)
-                for color in [BLUE_D, RED_D]  # B, E sorted
-            ]).arrange(RIGHT, buff=0.2).scale(0.7)
+            # Level 1: Split into individual elements - original unsorted state
+            level1_boxes = []
+            for letter, color in zip(unsorted_letters, [RED_D, BLUE_D, GREEN_D, YELLOW_D, PURPLE_D]):
+                level1_boxes.append(create_letter_box(letter, color))
             
-            level2_1_labels = VGroup(*[
-                Text(title, font_size=16, color=WHITE).move_to(rect)
-                for rect, title in zip(level2_1, ["B", "E"])
-            ])
+            level1 = VGroup(*level1_boxes).arrange(RIGHT, buff=0.4).scale(0.7)
             
-            level2_2 = VGroup(*[
-                Rectangle(height=0.4, width=0.6, fill_opacity=0.8, fill_color=color)
-                for color in [YELLOW_D, GREEN_D]  # A, D sorted
-            ]).arrange(RIGHT, buff=0.2).scale(0.7)
+            # Level 2: First merge step - create boxes with letters
+            # Group 1: B, E sorted
+            level2_1_boxes = [
+                create_letter_box("B", BLUE_D),
+                create_letter_box("E", RED_D)
+            ]
+            level2_1 = VGroup(*level2_1_boxes).arrange(RIGHT, buff=0.3).scale(0.7)
             
-            level2_2_labels = VGroup(*[
-                Text(title, font_size=16, color=WHITE).move_to(rect)
-                for rect, title in zip(level2_2, ["A", "D"])
-            ])
+            # Group 2: A, D sorted
+            level2_2_boxes = [
+                create_letter_box("A", YELLOW_D),
+                create_letter_box("D", GREEN_D)
+            ]
+            level2_2 = VGroup(*level2_2_boxes).arrange(RIGHT, buff=0.3).scale(0.7)
             
-            level2_3 = Rectangle(height=0.4, width=0.6, fill_opacity=0.8, fill_color=PURPLE_D).scale(0.7)
-            level2_3_label = Text("C", font_size=16, color=WHITE).move_to(level2_3)
+            # Group 3: C alone
+            level2_3 = create_letter_box("C", PURPLE_D).scale(0.7)
             
-            level2 = VGroup(level2_1, level2_2, level2_3).arrange(RIGHT, buff=0.5)
-            level2_labels = VGroup(level2_1_labels, level2_2_labels, level2_3_label)
+            # Arrange level 2 groups
+            level2 = VGroup(level2_1, level2_2, level2_3).arrange(RIGHT, buff=0.8)
             
             # Level 3: Second merge step
-            level3_1 = VGroup(*[
-                Rectangle(height=0.4, width=0.6, fill_opacity=0.8, fill_color=color)
-                for color in [YELLOW_D, BLUE_D, RED_D]  # A, B, E sorted
-            ]).arrange(RIGHT, buff=0.2).scale(0.7)
+            # Group 1: A, B, E merged correctly
+            level3_1_boxes = [
+                create_letter_box("A", YELLOW_D),
+                create_letter_box("B", BLUE_D),
+                create_letter_box("E", RED_D)
+            ]
+            level3_1 = VGroup(*level3_1_boxes).arrange(RIGHT, buff=0.3).scale(0.7)
             
-            level3_1_labels = VGroup(*[
-                Text(title, font_size=16, color=WHITE).move_to(rect)
-                for rect, title in zip(level3_1, ["A", "B", "E"])
-            ])
+            # Group 2: C, D merged correctly
+            level3_2_boxes = [
+                create_letter_box("C", PURPLE_D),
+                create_letter_box("D", GREEN_D)
+            ]
+            level3_2 = VGroup(*level3_2_boxes).arrange(RIGHT, buff=0.3).scale(0.7)
             
-            level3_2 = VGroup(*[
-                Rectangle(height=0.4, width=0.6, fill_opacity=0.8, fill_color=color)
-                for color in [PURPLE_D, GREEN_D]  # C, D sorted
-            ]).arrange(RIGHT, buff=0.2).scale(0.7)
+            # Arrange level 3 groups
+            level3 = VGroup(level3_1, level3_2).arrange(RIGHT, buff=1.0)
             
-            level3_2_labels = VGroup(*[
-                Text(title, font_size=16, color=WHITE).move_to(rect)
-                for rect, title in zip(level3_2, ["C", "D"])
-            ])
+            # Final level: Fully sorted in alphabetical order A, B, C, D, E
+            level4_boxes = [
+                create_letter_box("A", YELLOW_D),
+                create_letter_box("B", BLUE_D),
+                create_letter_box("C", PURPLE_D),
+                create_letter_box("D", GREEN_D),
+                create_letter_box("E", RED_D)
+            ]
+            level4 = VGroup(*level4_boxes).arrange(RIGHT, buff=0.3).scale(0.7)
             
-            level3 = VGroup(level3_1, level3_2).arrange(RIGHT, buff=0.5)
-            level3_labels = VGroup(level3_1_labels, level3_2_labels)
+            # Position levels with vertical spacing
+            merge_sort_y_positions = [2, 0.8, -0.4, -1.6]
             
-            # Final level: Fully sorted
-            level4 = VGroup(*[
-                Rectangle(height=0.4, width=0.6, fill_opacity=0.8, fill_color=color)
-                for color in [YELLOW_D, BLUE_D, PURPLE_D, GREEN_D, RED_D]  # A, B, C, D, E sorted
-            ]).arrange(RIGHT, buff=0.2).scale(0.7)
-            
-            level4_labels = VGroup(*[
-                Text(title, font_size=16, color=WHITE).move_to(rect)
-                for rect, title in zip(level4, ["A", "B", "C", "D", "E"])
-            ])
-            
-            # Set positions for merge sort levels - more vertical space
-            merge_sort_y_positions = [2, 0.8, -0.4, -1.6]  # Increased spacing
-            
-            # Position levels with better spacing
             level1.move_to([0, merge_sort_y_positions[0], 0])
             level2.move_to([0, merge_sort_y_positions[1], 0])
             level3.move_to([0, merge_sort_y_positions[2], 0])
             level4.move_to([0, merge_sort_y_positions[3], 0])
             
-            # Add split/merge arrows
-            split_arrows = VGroup(*[
-                Arrow(start=level1[i].get_bottom() + DOWN*0.1, 
-                    end=level2_destination, 
-                    buff=0.1, 
-                    color=WHITE)
-                for i, level2_destination in zip(
-                    [0, 1, 2, 3, 4], 
-                    [level2_1[1].get_top(), level2_1[0].get_top(), 
-                    level2_2[1].get_top(), level2_2[0].get_top(), 
-                    level2_3.get_top()]
+            # Create arrows with clear positioning
+            def create_arrow(source, target):
+                return Arrow(
+                    start=source.get_bottom() + DOWN*0.05, 
+                    end=target.get_top() + UP*0.05, 
+                    buff=0.1,
+                    color=WHITE,
+                    max_tip_length_to_length_ratio=0.15
                 )
-            ])
             
-            merge_arrows_l2_to_l3 = VGroup(
-                Arrow(level2_1.get_bottom() + DOWN*0.1, level3_1.get_top() + UP*0.1, buff=0.1, color=WHITE),
-                Arrow(level2_2.get_bottom() + DOWN*0.1, level3_1.get_top() + UP*0.1, buff=0.1, color=WHITE),
-                Arrow(level2_3.get_bottom() + DOWN*0.1, level3_2.get_top() + UP*0.1, buff=0.1, color=WHITE)
+            # Create arrows for level transitions
+            # Level 1 to Level 2
+            split_arrows = VGroup(
+                create_arrow(level1[0], level2_1[1]),  # E → second position in BE
+                create_arrow(level1[1], level2_1[0]),  # B → first position in BE
+                create_arrow(level1[2], level2_2[1]),  # D → second position in AD
+                create_arrow(level1[3], level2_2[0]),  # A → first position in AD
+                create_arrow(level1[4], level2_3)      # C → C
             )
             
+            # Level 2 to Level 3
+            merge_arrows_l2_to_l3 = VGroup(
+                Arrow(level2_1.get_bottom() + DOWN*0.05, level3_1.get_top() + UP*0.05, buff=0.1, color=WHITE),
+                Arrow(level2_2.get_bottom() + DOWN*0.05, level3_1.get_top() + UP*0.05, buff=0.1, color=WHITE),
+                Arrow(level2_3.get_bottom() + DOWN*0.05, level3_2.get_top() + UP*0.05, buff=0.1, color=WHITE)
+            )
+            
+            # Level 3 to Level 4
             merge_arrows_l3_to_l4 = VGroup(
-                Arrow(level3_1.get_bottom() + DOWN*0.1, level4.get_top() + UP*0.1, buff=0.1, color=WHITE),
-                Arrow(level3_2.get_bottom() + DOWN*0.1, level4.get_top() + UP*0.1, buff=0.1, color=WHITE)
+                Arrow(level3_1.get_bottom() + DOWN*0.05, level4.get_top() + UP*0.05, buff=0.1, color=WHITE),
+                Arrow(level3_2.get_bottom() + DOWN*0.05, level4.get_top() + UP*0.05, buff=0.1, color=WHITE)
             )
             
             # Animation sequence
@@ -622,7 +654,6 @@ class EnhancedPProblems(VoiceoverScene):
                 FadeOut(song_titles),
                 FadeOut(processing_text),
                 FadeIn(level1),
-                FadeIn(level1_labels),
                 run_time=1
             )
             
@@ -636,62 +667,46 @@ class EnhancedPProblems(VoiceoverScene):
                 run_time=0.8
             )
             
-            # Step 2: First merge
+            # Step 2: First merge - initial sorting into pairs
             step2_text = Text("Step 2: Merge into sorted pairs", color=WHITE).scale(0.5).next_to(merge_sort_text, DOWN)
             
             self.play(
                 ReplacementTransform(step1_text, step2_text),
                 FadeIn(level2),
-                FadeIn(level2_labels),
                 Create(split_arrows, lag_ratio=0.2),
                 run_time=1.5
             )
             
-            # Step 3: Second merge
+            # Step 3: Second merge - merge sorted groups
             step3_text = Text("Step 3: Merge sorted groups", color=WHITE).scale(0.5).next_to(merge_sort_text, DOWN)
             
             self.play(
                 ReplacementTransform(step2_text, step3_text),
                 FadeIn(level3),
-                FadeIn(level3_labels),
                 Create(merge_arrows_l2_to_l3, lag_ratio=0.2),
                 run_time=1.5
             )
             
-            # Step 4: Final merge
-            step4_text = Text("Step 4: Final sorted result", color=WHITE).scale(0.5).next_to(merge_sort_text, DOWN)
+            # Step 4: Final merge - final correctly sorted result
+            step4_text = Text("Step 4: Final sorted result (A-E)", color=WHITE).scale(0.5).next_to(merge_sort_text, DOWN)
             
             self.play(
                 ReplacementTransform(step3_text, step4_text),
                 FadeIn(level4),
-                FadeIn(level4_labels),
                 Create(merge_arrows_l3_to_l4, lag_ratio=0.2),
                 run_time=1.5
             )
             
             # Highlight polynomial time complexity
-            time_complexity = Text("Time Complexity: O(n log n)", color=GREEN).scale(0.5).next_to(step4_text, RIGHT)
+            time_complexity = Text("Time Complexity: O(n log n)", color=GREEN).scale(0.5).next_to(step4_text, RIGHT, buff=0.3)
             self.play(Write(time_complexity), run_time=0.7)
             
-            # Show speed with increasing playlist size
+
+        self.wait(1)
+        with self.voiceover(" Even if your playlist has thousands of songs, the computer can sort it relatively quickly."):
+          
             # thousands_text = Text("Even with thousands of songs...", color=YELLOW).scale(0.6).to_edge(UP)
-            # checkmark = Text("✓", color=GREEN).scale(1.5).next_to(computer_icon)
-            
-            # self.play(
-            #     ReplacementTransform(merge_sort_text, thousands_text),
-            #     FadeOut(step4_text),
-            #     FadeOut(time_complexity),
-            #     run_time=0.8
-            # )
-            
-            # # Show a stack of more songs appearing
-            # many_songs = VGroup(*[
-            #     Rectangle(height=0.1, width=2.5, fill_opacity=0.8, fill_color=interpolate_color(BLUE, RED, i/20))
-            #     for i in range(20)
-            # ]).arrange(DOWN, buff=0.02).next_to(computer_icon, RIGHT, buff=0.5)
-                
-            thousands_text = Text("Even with thousands of songs...", color=YELLOW).scale(0.6).to_edge(UP)
-            checkmark = Text("✓", color=GREEN).scale(1.5).next_to(computer_icon)
+            checkmark = Text("✓", color=GREEN).scale(1.5).next_to(computer_icon).shift(LEFT*0.5)
 
             # Create many songs block with proper positioning to avoid overlap with merge sort
             many_songs = VGroup(*[
@@ -712,292 +727,18 @@ class EnhancedPProblems(VoiceoverScene):
         
         self.wait(2)
         self.clear()
-        # GPS/Shortest Path Example with improved visualizations and better spacing
-        # with self.voiceover("Think about your GPS app. It figures out the quickest way to your destination, even with traffic and multiple routes. This is another P problem! Algorithms like 'Dijkstra's Algorithm' can find the shortest path in polynomial time. Even if the map has many roads and cities, the app can find the best route without taking forever."):
-       
-            
-        #     # Create a more detailed navigation scene
-        #     section_title = Text("GPS Navigation: Finding Shortest Path", color=BLUE).scale(0.7).to_edge(UP)
-            
-        #     # Create a more structured city map
-        #     city_bg = Rectangle(height=5, width=7, fill_color=GREY_E, fill_opacity=0.3).scale(0.8)
-            
-        #     # Position city map on the left side for better balance - do this BEFORE creating buildings
-        #     city_bg.move_to(LEFT * 2.5)  # Move further left to fix alignment
-
-            
-        #     # Create buildings with better visual structure
-        #     buildings = VGroup()
-        #     building_positions = [
-        #         [-2, 1.5, 0], [0, 2, 0], [2, 1.5, 0],  # Top row
-        #         [-2.5, 0, 0], [0, 0, 0], [2.5, 0, 0],  # Middle row
-        #         [-2, -1.5, 0], [0, -2, 0], [2, -1.5, 0]  # Bottom row
-        #     ]
-            
-        #     # Apply the LEFT shift to all building positions directly
-        #     shifted_positions = []
-        #     for pos in building_positions:
-        #         shifted_positions.append([pos[0] - 2.5, pos[1], pos[2]])  # Apply the LEFT * 2.5 shift
-            
-        #     for i, pos in enumerate(shifted_positions):
-        #         height = random.uniform(0.5, 0.8)
-        #         width = random.uniform(0.3, 0.5)
-        #         building = Rectangle(
-        #             height=height, 
-        #             width=width, 
-        #             fill_color=interpolate_color(BLUE_E, PURPLE_E, random.random()),
-        #             fill_opacity=0.8,
-        #             stroke_color=WHITE,
-        #             stroke_width=1
-        #         ).move_to(pos)
-        #         buildings.add(building)
-            
-        #     # Add city landmarks for context - use shifted positions
-        #     start_point = Dot(color=GREEN).move_to(shifted_positions[0])
-        #     end_point = Dot(color=RED).move_to(shifted_positions[8])
-            
-        #     start_label = Text("Start", color=GREEN).scale(0.4).next_to(start_point, UP)
-        #     end_label = Text("End", color=RED).scale(0.4).next_to(end_point, UP)
-            
-        #     # Create road network between buildings
-        #     roads = VGroup()
-        #     road_graph = [
-        #         (0, 1), (0, 3), (1, 2), (1, 4), (2, 5),
-        #         (3, 4), (3, 6), (4, 5), (4, 7), (5, 8),
-        #         (6, 7), (7, 8)
-        #     ]
-            
-        #     for start_idx, end_idx in road_graph:
-        #         road = Line(
-        #             buildings[start_idx].get_center(),
-        #             buildings[end_idx].get_center(),
-        #             color=WHITE,
-        #             stroke_width=2
-        #         )
-        #         roads.add(road)
-            
-        #     # Add traffic congestion to some roads
-        #     traffic_roads = [1, 4, 7]  # Indices of roads with traffic
-        #     for idx in traffic_roads:
-        #         traffic_indicator = DashedLine(
-        #             roads[idx].get_start(),
-        #             roads[idx].get_end(),
-        #             color=RED_E,
-        #             dash_length=0.1,
-        #             stroke_width=4
-        #         )
-        #         roads[idx].become(traffic_indicator)
-            
-        #     # Create a smartphone frame - position on right side
-        #     phone_frame = RoundedRectangle(
-        #         height=4.5, 
-        #         width=2.5, 
-        #         corner_radius=0.2,
-        #         stroke_color=GREY_A,
-        #         stroke_width=3,
-        #         fill_color=BLACK,
-        #         fill_opacity=0.8
-        #     ).to_edge(RIGHT, buff=1)
-            
-        #     phone_screen = Rectangle(
-        #         height=4, 
-        #         width=2.2,
-        #         fill_color=GREY_E,
-        #         fill_opacity=1,
-        #         stroke_width=0
-        #     ).move_to(phone_frame)
-            
-        #     # Animation sequence
-        #     self.play(Write(section_title), run_time=0.8)
-            
-        #     # Create the city
-        #     self.play(
-        #         FadeIn(city_bg),
-        #         FadeIn(buildings, lag_ratio=0.1),
-        #         run_time=1.2
-        #     )
-            
-        #     # Add roads with traffic indicators
-        #     self.play(Create(roads, lag_ratio=0.1), run_time=1.5)
-            
-        #     # Show starting and ending points
-        #     self.play(
-        #         Create(start_point),
-        #         Create(end_point),
-        #         Write(start_label),
-        #         Write(end_label),
-        #         run_time=0.8
-        #     )
-            
-        #     # Show smartphone with navigation app
-        #     self.play(
-        #         Create(phone_frame),
-        #         FadeIn(phone_screen),
-        #         run_time=0.8
-        #     )
-            
-        #     # Create mini map on phone
-        #     mini_map = city_bg.copy().scale(0.35).move_to(phone_screen)
-        #     mini_buildings = buildings.copy().scale(0.35).move_to(phone_screen)
-        #     mini_roads = roads.copy().scale(0.35).move_to(phone_screen)
-        #     mini_start = start_point.copy().scale(0.35).move_to(mini_buildings[0].get_center())
-        #     mini_end = end_point.copy().scale(0.35).move_to(mini_buildings[8].get_center())
-            
-        #     nav_header = Text("Navigation", color=WHITE).scale(0.3).move_to(phone_screen.get_top() + DOWN*0.3)
-            
-        #     self.play(
-        #         FadeIn(mini_map),
-        #         FadeIn(mini_buildings),
-        #         FadeIn(mini_roads),
-        #         FadeIn(mini_start),
-        #         FadeIn(mini_end),
-        #         Write(nav_header),
-        #         run_time=1
-        #     )
-            
-        #     # Show algorithm analyzing all paths
-        #     searching_text = Text("Searching all paths...", color=YELLOW).scale(0.25).next_to(nav_header, DOWN, buff=0.1)
-        #     self.play(Write(searching_text), run_time=0.5)
-            
-        #     # Highlight possible paths with different colors
-        #     possible_paths = [
-        #         [0, 1, 2, 5, 8],  # Indices of roads for path 1
-        #         [0, 3, 6, 7, 8],  # Indices of roads for path 2
-        #         [0, 3, 4, 5, 8],  # Indices of roads for path 3
-        #     ]
-            
-        #     path_colors = [BLUE_A, PURPLE_A, YELLOW_A]
-        #     path_lines = VGroup()
-        #     mini_path_lines = VGroup()
-            
-        #     # Show algorithm considering multiple paths
-        #     for i, path_indices in enumerate(possible_paths):
-        #         path_segments = VGroup()
-        #         mini_path_segments = VGroup()
-                
-        #         for j in range(len(path_indices) - 1):
-        #             idx1, idx2 = path_indices[j], path_indices[j+1]
-        #             for road_idx, (s, e) in enumerate(road_graph):
-        #                 if (s == idx1 and e == idx2) or (s == idx2 and e == idx1):
-        #                     road_copy = roads[road_idx].copy().set_stroke(path_colors[i], opacity=0.5)
-        #                     mini_road_copy = mini_roads[road_idx].copy().set_stroke(path_colors[i], opacity=0.5)
-        #                     path_segments.add(road_copy)
-        #                     mini_path_segments.add(mini_road_copy)
-                
-        #         path_lines.add(path_segments)
-        #         mini_path_lines.add(mini_path_segments)
-                
-        #         self.play(
-        #             FadeIn(path_segments, lag_ratio=0.3),
-        #             FadeIn(mini_path_segments, lag_ratio=0.3),
-        #             run_time=0.8
-        #         )
-            
-        #     # Show algorithm selecting optimal path
-        #     found_text = Text("Route found!", color=GREEN).scale(0.25).next_to(nav_header, DOWN, buff=0.1)
-            
-        #     # Define the optimal path (shortest and avoiding traffic)
-        #     optimal_path_indices = [0, 3, 6, 7, 8]  # Bottom route avoiding traffic
-        #     optimal_path = VGroup()
-        #     mini_optimal_path = VGroup()
-            
-        #     for j in range(len(optimal_path_indices) - 1):
-        #         idx1, idx2 = optimal_path_indices[j], optimal_path_indices[j+1]
-        #         for road_idx, (s, e) in enumerate(road_graph):
-        #             if (s == idx1 and e == idx2) or (s == idx2 and e == idx1):
-        #                 road_copy = roads[road_idx].copy().set_stroke(GREEN, width=4)
-        #                 mini_road_copy = mini_roads[road_idx].copy().set_stroke(GREEN, width=4)
-        #                 optimal_path.add(road_copy)
-        #                 mini_optimal_path.add(mini_road_copy)
-            
-        #     self.play(
-        #         ReplacementTransform(searching_text, found_text),
-        #         FadeOut(path_lines),
-        #         FadeOut(mini_path_lines),
-        #         run_time=0.8
-        #     )
-            
-        #     self.play(
-        #         FadeIn(optimal_path, lag_ratio=0.2),
-        #         FadeIn(mini_optimal_path, lag_ratio=0.2),
-        #         run_time=1
-        #     )
-            
-        #     # Show time estimation
-        #     eta_text = Text("ETA: 12 minutes", color=GREEN).scale(0.25).next_to(found_text, DOWN, buff=0.1)
-        #     distance_text = Text("Distance: 3.2 miles", color=WHITE).scale(0.25).next_to(eta_text, DOWN, buff=0.1)
-            
-        #     self.play(
-        #         Write(eta_text),
-        #         Write(distance_text),
-        #         run_time=0.8
-        #     )
-            
-        #     # Highlight algorithm name and complexity
-        #     algo_text = Text("Dijkstra's Algorithm: O(E log V)", color=BLUE).scale(0.5).next_to(section_title, DOWN, buff=0.3)
-        #     self.play(Write(algo_text), run_time=0.8)
-            
-        #     self.wait(0.5)
-            
-        #     # Demonstrate that it scales well with larger maps
-        #     scaling_text = Text("Scales well with larger maps!", color=GREEN).scale(0.5).next_to(algo_text, DOWN, buff=0.3)
-            
-        #     # Make the map more complex (add more nodes and edges)
-        #     extra_dots = VGroup(*[
-        #         Dot(color=GREY).move_to([
-        #             random.uniform(-3, 3),
-        #             random.uniform(-2, 2),
-        #             0
-        #         ]) for _ in range(10)
-        #     ])
-            
-        #     # Adjust positions to match city group position - update to use the same shift as buildings
-        #     for dot in extra_dots:
-        #         dot.shift(LEFT * 2.5)  # Match the shift we applied to buildings
-            
-        #     extra_roads = VGroup()
-        #     for dot in extra_dots:
-        #         # Connect to 2 random buildings
-        #         for _ in range(2):
-        #             building = random.choice(buildings)
-        #             new_road = DashedLine(
-        #                 dot.get_center(),
-        #                 building.get_center(),
-        #                 color=GREY_A,
-        #                 dash_length=0.05
-        #             )
-        #             extra_roads.add(new_road)
-            
-        #     self.play(Write(scaling_text), run_time=0.7)
-        #     self.play(
-        #         FadeIn(extra_dots, lag_ratio=0.1),
-        #         Create(extra_roads, lag_ratio=0.1),
-        #         run_time=1
-        #     )
-            
-        #     # Show that it still finds path quickly
-        #     fast_checkmark = Text("✓", color=GREEN).scale(1.5).next_to(scaling_text)
-        #     self.play(Write(fast_checkmark), run_time=0.5)
-            
-        #     self.wait(1)
-            
-        #     # Add wait time before next section
-        
         
         # GPS/Shortest Path Example with improved visualizations and better spacing
         with self.voiceover("Think about your GPS app. It figures out the quickest way to your destination, even with traffic and multiple routes. This is another P problem! Algorithms like 'Dijkstra's Algorithm' can find the shortest path in polynomial time. Even if the map has many roads and cities, the app can find the best route without taking forever."):
-            # Hide main title to avoid overlap
-            # self.play(FadeOut(title), FadeOut(subtitle))
 
             # Clean transition
-            self.play(
-                FadeOut(VGroup(
-                    level1, level1_labels, level2, level2_labels, level3, level3_labels, 
-                    level4, level4_labels, split_arrows, merge_arrows_l2_to_l3, merge_arrows_l3_to_l4,
-                    computer_icon, checkmark, many_songs, thousands_text
-                )),
-                # FadeIn(title), FadeIn(subtitle)  # Restore main title
-            )
+            # self.play(
+            #     FadeOut(VGroup(
+            #         level1, level1_labels, level2, level2_labels, level3, level3_labels, 
+            #         level4, level4_labels, split_arrows, merge_arrows_l2_to_l3, merge_arrows_l3_to_l4,
+            #         computer_icon, checkmark, many_songs
+            #     )),
+            # )
 
             
             # Create a more detailed navigation scene
@@ -1223,7 +964,7 @@ class EnhancedPProblems(VoiceoverScene):
             self.wait(0.5)
             
             # Demonstrate that it scales well with larger maps
-            scaling_text = Text("Scales well with larger maps!", color=GREEN).scale(0.5).next_to(algo_text, DOWN, buff=0.3).to_edge(UP, buff=1.5)
+            scaling_text = Text("Scales well with larger maps!", color=GREEN).scale(0.5).next_to(algo_text, DOWN, buff=0.3).to_edge(UP, buff=1.5).shift(DOWN*0.5)
             
             # Make the map more complex (add more nodes and edges)
             extra_dots = VGroup(*[
@@ -1259,7 +1000,7 @@ class EnhancedPProblems(VoiceoverScene):
             )
             
             # Show that it still finds path quickly
-            fast_checkmark = Text("✓", color=GREEN).scale(1.5).next_to(scaling_text)
+            fast_checkmark = Text("✓", color=GREEN).scale(1.0).next_to(scaling_text)
             self.play(Write(fast_checkmark), run_time=0.5)
             
             self.wait(1)
@@ -1274,14 +1015,12 @@ class EnhancedPProblems(VoiceoverScene):
                 mini_buildings, mini_roads, mini_start, mini_end, nav_header,
                 found_text, optimal_path, mini_optimal_path, eta_text, distance_text,
                 algo_text, scaling_text, extra_dots, extra_roads, fast_checkmark
-            )),
-            # FadeIn(title), FadeIn(subtitle)  # Restore main title
+            ))
         )
-        
+
         # Final Recap with more engaging Visual Elements and better spacing
         with self.voiceover("P problems are the problems computers can handle efficiently. Sorting, finding shortest routes, searching databases – these are all examples of P problems. They're the reason we can use computers for so many useful tasks. They're the manageable problems in a world of complex challenges."):
             # Hide main title to avoid overlap
-            # self.play(FadeOut(title), FadeOut(subtitle))
             
             # Create a dedicated recap title that doesn't overlap
             recap_title = Text("P Problems: Making Computing Possible", color=BLUE).scale(0.7).to_edge(UP)
@@ -1334,8 +1073,8 @@ class EnhancedPProblems(VoiceoverScene):
             growth_title = Text("Time vs Problem Size", color=BLUE).scale(0.4).next_to(axes, UP, buff=0.2)
             
             # Position labels carefully to avoid overlap
-            poly_label = Text("P Problems (n²)", color=GREEN).scale(0.3).next_to(poly, UL, buff=0.1).shift(LEFT*0.3)
-            exp_label = Text("Hard Problems (2ⁿ)", color=RED).scale(0.3).next_to(exp, RIGHT, buff=0.2).shift(UP*0.5)
+            poly_label = Text("P Problems (n²)", color=GREEN).scale(0.3).next_to(poly, RIGHT, buff=0.1).shift(LEFT*1.5)
+            exp_label = Text("Hard Problems (2ⁿ)", color=RED).scale(0.3).next_to(exp, RIGHT, buff=0.2).shift(UP*1.5).shift(LEFT*0.4)
             
             # Animation sequence
             self.play(Write(recap_title), run_time=0.8)
@@ -1394,8 +1133,8 @@ class EnhancedPProblems(VoiceoverScene):
             )
             
             # Add a computer icon processing efficiently - position at bottom center
-            computer_icon = SVGMobject("desktop-computer").scale(0.8).move_to([0, -2, 0])
-            success_indicator = Text("✓", color=GREEN).scale(1.5).next_to(computer_icon, RIGHT)
+            computer_icon = SVGMobject("desktop-computer").scale(0.3).move_to([0, -2, 0])
+            success_indicator = Text("✓", color=GREEN).scale(1).next_to(computer_icon, RIGHT)
             
             self.play(
                 Create(computer_icon),
@@ -1410,76 +1149,139 @@ class EnhancedPProblems(VoiceoverScene):
             
             self.wait(1)
             
-            # Group all elements for clean fadeout
-            all_elements = VGroup(
-                recap_title, recap_text, sort_icon, path_icon, db_icon,
-                axes, poly, exp, growth_title, poly_label, exp_label,
-                computer_icon, success_indicator
-            )
+        # Group all elements for clean fadeout
+        all_elements = VGroup(
+            recap_title, recap_text, sort_icon, path_icon, db_icon,
+            axes, poly, exp, growth_title, poly_label, exp_label,
+            computer_icon, success_indicator
+        )
+        
+        # Clean transition
+        self.play(FadeOut(all_elements))
             
-            # Clean transition
-            self.play(FadeOut(all_elements))
-            
-            # Add wait time before next section
-            self.wait(1)
-            
-        self.clear()
         # Enhanced Closing Message with visuals of everyday technologies and better spacing
+        # with self.voiceover("So, next time you use your phone to find directions or sort your photos, remember the power of P problems! They're making our digital world faster and more efficient."):
+            
+        #     # Create closing title with proper positioning
+        #     closing_title = Text("P Problems All Around Us", color=BLUE).scale(0.8).to_edge(UP)
+            
+        #     # Create devices showing P problem examples
+        #     smartphone = RoundedRectangle(
+        #         height=2, width=1, corner_radius=0.1,
+        #         stroke_color=GREY_A, stroke_width=2,
+        #         fill_color=BLACK, fill_opacity=0.8
+        #     ).shift(LEFT*2)
+            
+        #     laptop = VGroup(
+        #         Rectangle(height=1.2, width=1.8, fill_color=GREY_D, fill_opacity=0.8),
+        #         Rectangle(height=0.1, width=1.8, fill_color=GREY, fill_opacity=0.8).next_to(ORIGIN, DOWN, buff=0)
+        #     ).shift(RIGHT*2)
+            
+        #     # Add app icons on phone
+        #     map_app = Square(side_length=0.2, fill_color=BLUE, fill_opacity=0.8).move_to(smartphone.get_center() + UP*0.3)
+        #     photo_app = Square(side_length=0.2, fill_color=RED, fill_opacity=0.8).move_to(smartphone.get_center())
+        #     music_app = Square(side_length=0.2, fill_color=GREEN, fill_opacity=0.8).move_to(smartphone.get_center() + DOWN*0.3)
+            
+        #     # Position labels with space to avoid overlap
+        #     map_label = Text("Maps", font_size=16).next_to(map_app, RIGHT, buff=0.2)
+        #     photo_label = Text("Photos", font_size=16).next_to(photo_app, RIGHT, buff=0.2)
+        #     music_label = Text("Music", font_size=16).next_to(music_app, RIGHT, buff=0.2)
+            
+        #     # Add code on laptop screen
+        #     code_text = """
+        #     def merge_sort(arr):
+        #         if len(arr) <= 1:
+        #             return arr
+        #         mid = len(arr) // 2
+        #         left = merge_sort(arr[:mid])
+        #         right = merge_sort(arr[mid:])
+        #         return merge(left, right)
+        #     """
+        #     code = Text(code_text, font="Monospace", font_size=10).move_to(laptop)
+            
+        #     # Animation sequence
+        #     self.play(Write(closing_title), run_time=0.8)
+            
+        #     # Show devices with sequential timing
+        #     self.play(
+        #         Create(smartphone),
+        #         Create(laptop),
+        #         run_time=1
+        #     )
+            
+        #     # Show phone apps with sequential timing for clarity
+        #     self.play(
+        #         FadeIn(map_app), 
+        #         Write(map_label),
+        #         run_time=0.6
+        #     )
+            
+        #     self.play(
+        #         FadeIn(photo_app),
+        #         Write(photo_label),
+        #         run_time=0.6
+        #     )
+            
+        #     self.play(
+        #         FadeIn(music_app),
+        #         Write(music_label),
+        #         run_time=0.6
+        #     )
+            
+        #     # Show code on laptop
+        #     self.play(Write(code), run_time=0.8)
+            
+        #     # Highlight key points with animations
+        #     self.play(
+        #         Flash(map_app, color=BLUE, line_length=0.1, flash_radius=0.2),
+        #         Flash(photo_app, color=RED, line_length=0.1, flash_radius=0.2),
+        #         Flash(music_app, color=GREEN, line_length=0.1, flash_radius=0.2),
+        #         run_time=1
+        #     )
+            
+        # Enhanced section with only smartphone visualization
         with self.voiceover("So, next time you use your phone to find directions or sort your photos, remember the power of P problems! They're making our digital world faster and more efficient."):
-            # Hide main title to avoid overlap
-            # self.play(FadeOut(title), FadeOut(subtitle))
             
             # Create closing title with proper positioning
             closing_title = Text("P Problems All Around Us", color=BLUE).scale(0.8).to_edge(UP)
             
-            # Create devices showing P problem examples
+            # Create smartphone only
             smartphone = RoundedRectangle(
-                height=2, width=1, corner_radius=0.1,
+                height=2.5, width=1.3, corner_radius=0.1,
                 stroke_color=GREY_A, stroke_width=2,
                 fill_color=BLACK, fill_opacity=0.8
-            ).shift(LEFT*2)
+            ).move_to(ORIGIN)
             
-            laptop = VGroup(
-                Rectangle(height=1.2, width=1.8, fill_color=GREY_D, fill_opacity=0.8),
-                Rectangle(height=0.1, width=1.8, fill_color=GREY, fill_opacity=0.8).next_to(ORIGIN, DOWN, buff=0)
-            ).shift(RIGHT*2)
+            # Add app icons on phone with more space between them
+            map_app = Square(side_length=0.25, fill_color=BLUE, fill_opacity=0.8).move_to(smartphone.get_center() + UP*0.6)
+            photo_app = Square(side_length=0.25, fill_color=RED, fill_opacity=0.8).move_to(smartphone.get_center())
+            music_app = Square(side_length=0.25, fill_color=GREEN, fill_opacity=0.8).move_to(smartphone.get_center() + DOWN*0.6)
             
-            # Add app icons on phone
-            map_app = Square(side_length=0.2, fill_color=BLUE, fill_opacity=0.8).move_to(smartphone.get_center() + UP*0.3)
-            photo_app = Square(side_length=0.2, fill_color=RED, fill_opacity=0.8).move_to(smartphone.get_center())
-            music_app = Square(side_length=0.2, fill_color=GREEN, fill_opacity=0.8).move_to(smartphone.get_center() + DOWN*0.3)
+            # Position labels with improved spacing
+            map_label = Text("Maps", font_size=20).next_to(map_app, RIGHT, buff=0.3)
+            photo_label = Text("Photos", font_size=20).next_to(photo_app, RIGHT, buff=0.3)
+            music_label = Text("Music", font_size=20).next_to(music_app, RIGHT, buff=0.3)
             
-            # Position labels with space to avoid overlap
-            map_label = Text("Maps", font_size=16).next_to(map_app, RIGHT, buff=0.2)
-            photo_label = Text("Photos", font_size=16).next_to(photo_app, RIGHT, buff=0.2)
-            music_label = Text("Music", font_size=16).next_to(music_app, RIGHT, buff=0.2)
-            
-            # Add code on laptop screen
-            code_text = """
-            def merge_sort(arr):
-                if len(arr) <= 1:
-                    return arr
-                mid = len(arr) // 2
-                left = merge_sort(arr[:mid])
-                right = merge_sort(arr[mid:])
-                return merge(left, right)
-            """
-            code = Text(code_text, font="Monospace", font_size=10).move_to(laptop)
+            # Add algorithm labels next to the app icons to explain what P problems they solve
+            map_algo = Text("Shortest Path", font_size=16, color=YELLOW).next_to(map_label, RIGHT, buff=0.3)
+            photo_algo = Text("Pattern Recognition", font_size=16, color=YELLOW).next_to(photo_label, RIGHT, buff=0.3)
+            music_algo = Text("Recommendation", font_size=16, color=YELLOW).next_to(music_label, RIGHT, buff=0.3)
             
             # Animation sequence
             self.play(Write(closing_title), run_time=0.8)
             
-            # Show devices with sequential timing
-            self.play(
-                Create(smartphone),
-                Create(laptop),
-                run_time=1
-            )
+            # Show smartphone
+            self.play(Create(smartphone), run_time=1)
             
             # Show phone apps with sequential timing for clarity
             self.play(
                 FadeIn(map_app), 
                 Write(map_label),
+                run_time=0.6
+            )
+            
+            self.play(
+                Write(map_algo),
                 run_time=0.6
             )
             
@@ -1490,40 +1292,33 @@ class EnhancedPProblems(VoiceoverScene):
             )
             
             self.play(
+                Write(photo_algo),
+                run_time=0.6
+            )
+            
+            self.play(
                 FadeIn(music_app),
                 Write(music_label),
                 run_time=0.6
             )
             
-            # Show code on laptop
-            self.play(Write(code), run_time=0.8)
+            self.play(
+                Write(music_algo),
+                run_time=0.6
+            )
             
             # Highlight key points with animations
             self.play(
-                Flash(map_app, color=BLUE, line_length=0.1, flash_radius=0.2),
-                Flash(photo_app, color=RED, line_length=0.1, flash_radius=0.2),
-                Flash(music_app, color=GREEN, line_length=0.1, flash_radius=0.2),
-                run_time=1
+                Flash(map_app, color=BLUE, line_length=0.1, flash_radius=0.3),
+                Flash(photo_app, color=RED, line_length=0.1, flash_radius=0.3),
+                Flash(music_app, color=GREEN, line_length=0.1, flash_radius=0.3),
+                run_time=1.5
             )
-            
+        self.wait(2)
+        # self.clear()
         # Add final "thank you" message with proper spacing
-        thank_you = Text("Thank you for watching!", color=YELLOW).scale(0.8).to_edge(DOWN, buff=0.5)
-        self.play(Write(thank_you), run_time=1)
-        
-        self.wait(1.5)
-        
-        # Final fadeout
-        self.play(
-            FadeOut(VGroup(
-                closing_title, smartphone, laptop, map_app, photo_app, music_app,
-                map_label, photo_label, music_label, code, thank_you
-            ))
-        )
-        
-        # Bring back the main title for a proper finale
-        self.play(FadeIn(title), FadeIn(subtitle))
-        self.wait(1)
-        
-        # Final goodbye
-        self.play(FadeOut(title), FadeOut(subtitle))
-        self.wait(0.5)
+        # thank_you = Text("Thank you for watching!", color=YELLOW).scale(0.8).move_to(ORIGIN)
+        with self.voiceover("Thank you for watching!"): 
+            # self.play(Write(thank_you), run_time=1)
+            pass
+        self.wait(2.0)
